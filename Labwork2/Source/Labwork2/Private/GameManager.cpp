@@ -48,6 +48,8 @@ void AGameManager::OnActorClicked(AActor* Actor, FKey button)
 
 }
 
+// Labwork2 Komut havuzundan geri alma 
+
 bool AGameManager::UndoLastMove()
 {
 	int movesLeft = CommandPool.Num();
@@ -112,3 +114,4 @@ void AGameManager::Tick(float DeltaTime)
 	}
 }
 
+//AA
