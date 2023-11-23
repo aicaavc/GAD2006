@@ -54,7 +54,7 @@ bool AGameManager::UndoLastMove()
 
 	if (movesLeft <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Can not Revert ")));
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Can not Revert")));
 		return false;
 	}
 
