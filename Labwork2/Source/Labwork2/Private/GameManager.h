@@ -5,25 +5,24 @@
 #include "CoreMinimal.h"
 #include "GameGrid.h"
 #include "UnitBase.h"
-#include "Commands/Command.h"
-#include "Commands/MoveCommand.h"
 #include "GameFramework/Actor.h"
+#include "Commands/Command.h"
 #include "GameManager.generated.h"
 
 USTRUCT(BlueprintType)
-struct FSUnitInfo
+struct FSUnitInfo 
 {
 	GENERATED_USTRUCT_BODY();
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AUnitBase> UnitClass;
-
+	
 	UPROPERTY(EditAnywhere)
 	FSGridPosition StartPosition;
 };
 
 USTRUCT(BlueprintType)
-struct FSLevelInfo
+struct FSLevelInfo 
 {
 	GENERATED_USTRUCT_BODY();
 
@@ -40,10 +39,13 @@ public:
 	// Sets default values for this actor's properties
 	AGameManager();
 
+	UFUNCTION(BlueprintCallable)
+		bool UndoLastMove();
+
 	void OnActorClicked(AActor* Actor, FKey button);
-	void OnBackspaceClicked(AActor* Actor, FKey button);
 
 	void CreateLevelActors(FSLevelInfo& Info);
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int CurrentLevel;
@@ -54,8 +56,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	AGameGrid* GameGrid;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool UndoLastMove();
 
 protected:
 	// Called when the game starts or when spawned
@@ -67,7 +67,7 @@ public:
 
 private:
 	AUnitBase* ThePlayer;
-
 	TArray<TSharedRef<Command>> CommandPool;
-	TSharedPtr<Command> CurrentCommand;
+	TSharedPtr<Command>			CurrentCommand;
+
 };

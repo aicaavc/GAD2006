@@ -17,16 +17,13 @@ class ATBPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+
 	ATBPlayerController();
 
 	void BeginPlay() override;
-
+	
 	void OnActorClicked(AActor* Actor, FKey key);
 
-	UFUNCTION(BlueprintCallable)
-	void OnBackspaceClicked(AActor* Actor, FKey key);
-		
 	UPROPERTY(BlueprintReadWrite)
 	AGameManager* GameManager;
-	
 };

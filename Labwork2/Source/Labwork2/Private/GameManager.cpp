@@ -2,14 +2,12 @@
 
 
 #include "GameManager.h"
+#include "Commands/MoveCommand.h"
 #include "TBPlayerController.h"
-
-
 
 // Sets default values
 AGameManager::AGameManager()
 {
-
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -17,55 +15,55 @@ AGameManager::AGameManager()
 
 void AGameManager::OnActorClicked(AActor* Actor, FKey button)
 {
-	if (CurrentCommand.IsValid() && CurrentCommand->IsExecuting()) return;
+	//Still executing a command?
+	if (CurrentCommand.IsValid() && CurrentCommand->IsExecuting())
+	{
+		return;
+	}
 
 	AGameSlot* Slot = Cast<AGameSlot>(Actor);
 
-	if (!Slot) return;
+	//Clicked on a non slot actor?
+	if (!Slot)
+	{
+		return;
+	}
 
+	//Player click?
 	if (!ThePlayer)
 	{
 		UE_LOG(LogTemp, Error, TEXT("No Player Unit Detected!"));
+		return;
 	}
 
+	//Empty slot? Then It's a move command for the player
 	if (Slot->Unit == nullptr)
 	{
-		TSharedRef<MoveCommand> Cmd =
-			MakeShared<MoveCommand>(ThePlayer->Slot->GridPosition, Slot->GridPosition);
+		//Move from player position to clicked position
+		TSharedRef<MoveCommand> Cmd = MakeShared<MoveCommand>(ThePlayer->Slot->GridPosition, Slot->GridPosition);
 		CommandPool.Add(Cmd);
 		Cmd->Execute();
 		CurrentCommand = Cmd;
 	}
+
 }
 
-void AGameManager::OnBackspaceClicked(AActor* Actor, FKey button)
+bool AGameManager::UndoLastMove()
 {
+	int movesLeft = CommandPool.Num();
 
-	if (!ThePlayer)
+	if (movesLeft <= 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("No Player Unit Detected!"));
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("Can not Revert ")));
+		return false;
 	}
 
-	if (UndoLastMove())
-	{
-		TSharedPtr<Command> LastMove = CommandPool.Pop();
+	TSharedRef<Command> Cmd = CommandPool.Pop();
+	Cmd->Revert();
 
-		TSharedPtr<MoveCommand> LastMoveAsMoveCommand = StaticCastSharedPtr<MoveCommand>(LastMove);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, FString::Printf(TEXT("Reverting...")));
 
-		if (LastMoveAsMoveCommand.IsValid())
-		{
-			TSharedRef<MoveCommand> Cmd =
-				MakeShared<MoveCommand>(ThePlayer->Slot->GridPosition, LastMoveAsMoveCommand->Source);
-			Cmd->Revert();
-
-			CurrentCommand = Cmd;
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("YOU ARE ON THE BEGINNING POSITION!!!"));
-	}
-	
+	return true;
 }
 
 void AGameManager::CreateLevelActors(FSLevelInfo& Info)
@@ -81,22 +79,11 @@ void AGameManager::CreateLevelActors(FSLevelInfo& Info)
 			if (Slot->Unit && Slot->Unit->IsControlledByThePlayer())
 			{
 				ThePlayer = Slot->Unit;
-			}	
-		}	
+			}
+		}
 	}
 }
 
-bool AGameManager::UndoLastMove()
-{	
-	if (CommandPool.IsEmpty())
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-}
 
 // Called when the game starts or when spawned
 void AGameManager::BeginPlay()

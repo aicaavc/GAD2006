@@ -2,13 +2,16 @@
 
 
 #include "GameGrid.h"
+#include "Components/ChildActorComponent.h"
 
 AGameGrid* AGameGrid::GameGrid = nullptr;
 
 // Sets default values
 AGameGrid::AGameGrid():
-	NumCols(10),
-	NumRows(10)
+
+	NumRows(8),
+	NumCols(8)
+
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,6 +19,13 @@ AGameGrid::AGameGrid():
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 
 	GameGrid = this;
+}
+
+// Called when the game starts or when spawned
+void AGameGrid::BeginPlay()
+{
+	Super::BeginPlay();
+	
 }
 
 void AGameGrid::OnConstruction(const FTransform& Transform)
@@ -29,11 +39,17 @@ void AGameGrid::OnConstruction(const FTransform& Transform)
 
 	GridActors.Empty();
 
-	if (!GridClass->IsValidLowLevel()) return;
+	if (!GridClass->IsValidLowLevel()) 
+	{
+		return;
+	}
 
 	AGameSlot* Slot = GridClass->GetDefaultObject<AGameSlot>();
 
-	if (Slot == nullptr) return;
+	if (Slot == nullptr)
+	{
+		return;
+	}
 
 	FVector Extends = Slot->Box->GetScaledBoxExtent() * 2;
 
@@ -46,10 +62,8 @@ void AGameGrid::OnConstruction(const FTransform& Transform)
 			Grid->RegisterComponent();
 			Grid->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 			Grid->SetRelativeLocation(
-				FVector(
-					(NumRows - i - 1) * Extends.X - (NumRows * 0.5f - 0.5f) * Extends.X,
+				FVector((NumRows - i - 1) * Extends.X - (NumRows * 0.5f - 0.5f) * Extends.X,
 					j * Extends.Y - (NumCols * 0.5f - 0.5f) * Extends.Y, 0));
-
 			GridActors.Add(Grid);
 
 			Grid->SetChildActorClass(GridClass);
@@ -60,14 +74,10 @@ void AGameGrid::OnConstruction(const FTransform& Transform)
 			GameSlot->GridPosition.Row = i;
 		}
 	}
+
+
 }
 
-// Called when the game starts or when spawned
-void AGameGrid::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
 
 // Called every frame
 void AGameGrid::Tick(float DeltaTime)

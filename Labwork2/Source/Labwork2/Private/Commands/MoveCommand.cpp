@@ -3,13 +3,12 @@
 
 #include "Commands/MoveCommand.h"
 #include "GameGrid.h"
-#include "GameManager.h"
 
-MoveCommand::MoveCommand(FSGridPosition Src, FSGridPosition Dst) :
+
+MoveCommand::MoveCommand(FSGridPosition Src, FSGridPosition Dst):
 	Source(Src),
 	Destination(Dst)
 {
-	
 }
 
 MoveCommand::~MoveCommand()
@@ -30,12 +29,12 @@ void MoveCommand::Execute()
 
 void MoveCommand::Revert()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Reverting MoveCommand..."));
 	AGameSlot* SlotA = AGameGrid::FindSlot(Source);
 	AGameSlot* SlotB = AGameGrid::FindSlot(Destination);
 
-	AUnitBase* UnitA = SlotA->Unit;
+	AUnitBase* UnitA = SlotB->Unit;
 	check(UnitA);
-	UnitA->AssignToSlot(SlotB);
-	SlotA->SetState(GS_Default);
+	UnitA->AssignToSlot(SlotA);
+	SlotB->SetState(GS_Default);
 }
-
