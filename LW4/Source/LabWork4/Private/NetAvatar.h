@@ -24,8 +24,10 @@ public:
 	UCameraComponent* Camera;
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArm;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_UpdateMovementParams)
 	bool bIsRunning;
+	UPROPERTY(BlueprintReadWrite)
+	float MovementScale;
 
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -36,10 +38,13 @@ public:
 	void CeaseServerRun();
 
 private:
+
+	UFUNCTION()
+	void OnRep_UpdateCharacterMovement();
+
 	void MoveForward(float Amount);
 	void MoveRight(float Amount);
 	void RunPressed();
 	void RunReleased();
-	void UpdateCharacterMovement();
 
 };

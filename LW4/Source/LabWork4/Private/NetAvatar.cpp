@@ -4,7 +4,9 @@
 #include "NetAvatar.h"
 #include "GameFrameWork/CharacterMovementComponent.h"
 
-ANetAvatar::ANetAvatar()
+ANetAvatar::ANetAvatar() :
+MovementScale(1.0f)
+
 {
 	//SpringArm ve Camera bileþenlerini oluþturma 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -24,6 +26,13 @@ void ANetAvatar::BeginPlay()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 }
+
+void ANetAvatar::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ANetAvatar, bIsRunning);
+}
+
 
 // Oyuncu giriþi için gerekli ayarlarý yapýlandýran iþlev
 void ANetAvatar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -48,7 +57,7 @@ void ANetAvatar::MoveForward(float Scale)
 	FRotator Rotation = GetController()->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	AddMovementInput(ForwardDirection, Scale);
+	AddMovementInput(ForwardDirection, MovementScale * Scale);
 }
 
 // Karakterin kontrol rotasyonunu_sað
@@ -57,11 +66,11 @@ void ANetAvatar::MoveRight(float Scale)
 	FRotator Rotation = GetController()->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	AddMovementInput(ForwardDirection, Scale);
+	AddMovementInput(ForwardDirection, MovementScale * Scale);
 }
 
 // Hareket parametrelerini güncelleme
-void ANetAvatar::UpdateCharacterMovement()
+void ANetAvatar::OnRep_UpdateCharacterMovement()
 {
 	// Koþma tuþuna basýlýysa yürüme hýzýný güncelle
 	if (bIsRunning)
@@ -80,7 +89,7 @@ void ANetAvatar::RunPressed()
 	if (HasAuthority()) // Sunucuda çalýþtýrýlýyorsa
 	{
 		bIsRunning = true;
-		UpdateCharacterMovement(); // Hareket parametrelerini güncelle
+		void ANetAvatar::OnRep_UpdateCharacterMovement() // Hareket parametrelerini güncelle
 	}
 	else // Sunucuda deðilse
 	{
@@ -94,7 +103,7 @@ void ANetAvatar::RunReleased()
 	if (HasAuthority()) // Sunucuda çalýþtýrýlýyorsa
 	{
 		bIsRunning = false;
-		UpdateCharacterMovement(); // Hareket parametrelerini güncelle
+		void ANetAvatar::OnRep_UpdateCharacterMovement()  // Hareket parametrelerini güncelle
 	}
 	else // Sunucuda deðilse
 	{
