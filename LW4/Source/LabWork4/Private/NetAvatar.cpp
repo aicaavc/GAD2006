@@ -5,10 +5,8 @@
 #include "GameFrameWork/CharacterMovementComponent.h"
 
 ANetAvatar::ANetAvatar() :
-MovementScale(1.0f)
-
+	MovementScale(1.0f)
 {
-	//SpringArm ve Camera bileþenlerini oluþturma 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 
@@ -33,17 +31,13 @@ void ANetAvatar::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Out
 	DOREPLIFETIME(ANetAvatar, bIsRunning);
 }
 
-
-// Oyuncu giriþi için gerekli ayarlarý yapýlandýran iþlev
 void ANetAvatar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Kamera kontrolü için eksenler
 	PlayerInputComponent->BindAxis("Turn", this, &ACharacter::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Lookup", this, &ACharacter::AddControllerPitchInput);
 
-	// Hareket için eksenleri ve koþma
 	PlayerInputComponent->BindAxis("MoveForward", this, &ANetAvatar::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ANetAvatar::MoveRight);
 	PlayerInputComponent->BindAction("Run", EInputEvent::IE_Pressed, this, &ANetAvatar::RunPressed);
@@ -51,67 +45,61 @@ void ANetAvatar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
-//kontrol rotasyonunu_ileri
 void ANetAvatar::MoveForward(float Scale)
 {
 	FRotator Rotation = GetController()->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	AddMovementInput(ForwardDirection, MovementScale * Scale);
+	AddMovementInput(ForwardDirection, MovementScale*Scale);
 }
 
-// Karakterin kontrol rotasyonunu_sað
 void ANetAvatar::MoveRight(float Scale)
 {
 	FRotator Rotation = GetController()->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	AddMovementInput(ForwardDirection, MovementScale * Scale);
+	AddMovementInput(ForwardDirection, MovementScale*Scale);
 }
 
-// Hareket parametrelerini güncelleme
-void ANetAvatar::OnRep_UpdateCharacterMovement()
+
+void ANetAvatar::OnRep_UpdateMovementParams()
 {
-	// Koþma tuþuna basýlýysa yürüme hýzýný güncelle
 	if (bIsRunning)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 600.0f; //koþma
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 300.0f; //yürüme
+		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	}
 }
 
-// Koþma tuþuna basýldýðýnda çaðrýlanlar
 void ANetAvatar::RunPressed()
 {
-	if (HasAuthority()) // Sunucuda çalýþtýrýlýyorsa
+	if (HasAuthority())
 	{
 		bIsRunning = true;
-		void ANetAvatar::OnRep_UpdateCharacterMovement() // Hareket parametrelerini güncelle
+		OnRep_UpdateMovementParams();
 	}
-	else // Sunucuda deðilse
+	else
 	{
-		InitiateServerRun(); // Sunucuya koþma komutunu gönderir
+		InitiateServerRun();
 	}
 }
 
-// Pressedteki iþlemin tersi
 void ANetAvatar::RunReleased()
 {
-	if (HasAuthority()) // Sunucuda çalýþtýrýlýyorsa
+	if (HasAuthority())
 	{
 		bIsRunning = false;
-		void ANetAvatar::OnRep_UpdateCharacterMovement()  // Hareket parametrelerini güncelle
+		OnRep_UpdateMovementParams();
 	}
-	else // Sunucuda deðilse
+	else
 	{
-		CeaseServerRun(); // sunucuya koþmama komutu gönderme 
+		CeaseServerRun();
 	}
 }
 
-// Sunucuda koþma baþlatma
 void ANetAvatar::InitiateServerRun_Implementation()
 {
 	RunPressed();

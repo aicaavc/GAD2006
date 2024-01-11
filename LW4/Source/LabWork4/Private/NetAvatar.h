@@ -9,7 +9,7 @@
 #include "NetAvatar.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
 class ANetAvatar : public ANetBaseCharacter
@@ -22,10 +22,13 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* Camera;
+
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArm;
+
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_UpdateMovementParams)
 	bool bIsRunning;
+
 	UPROPERTY(BlueprintReadWrite)
 	float MovementScale;
 
@@ -34,17 +37,17 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void InitiateServerRun();
+
 	UFUNCTION(Server, Reliable)
 	void CeaseServerRun();
 
 private:
-
 	UFUNCTION()
-	void OnRep_UpdateCharacterMovement();
+	void OnRep_UpdateMovementParams();
 
 	void MoveForward(float Amount);
 	void MoveRight(float Amount);
 	void RunPressed();
 	void RunReleased();
-
+	
 };
