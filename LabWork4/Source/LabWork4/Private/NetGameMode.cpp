@@ -259,11 +259,11 @@ AActor* ANetGameMode::AssignTeamAndPlayerStart(AController* Player)
 		
 		if (Start)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Assigned Player %s to Team %d at %s"), *Player->GetHumanReadableName(), static_cast<int32>(State->TeamID), *Start->GetActorLocation().ToString());
+			UE_LOG(LogTemp, Warning, TEXT("Connect to the Player %s to Team %d at %s"), *Player->GetHumanReadableName(), static_cast<int32>(State->TeamID), *Start->GetActorLocation().ToString());
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to assign Player %s to a team start!"), *Player->GetHumanReadableName());
+			UE_LOG(LogTemp, Error, TEXT("Failed to connect Player %s to a team !!"), *Player->GetHumanReadableName());
 		}
 	}
 	return Start;

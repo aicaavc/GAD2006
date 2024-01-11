@@ -54,6 +54,7 @@ ANetPlayerState* ANetGameState::GetPlayerStateByIndex(int PlayerIndex)
 	return nullptr;
 }
 
+//Debug
 void ANetGameState::StartTimer()
 {	
 	RemainingTime = Timer;
