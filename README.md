@@ -4,7 +4,7 @@ This section summarizes the labwork projects developed for the **Advanced Game D
 
 ---
 
-### 🔹 Labwork 1 – Stamina System
+###  Labwork 1 – Stamina System
 
 A stamina system was implemented in the `ACOAAvatar` class, tracking and controlling player's sprinting ability.
 
@@ -29,7 +29,7 @@ A stamina system was implemented in the `ACOAAvatar` class, tracking and control
 
 ---
 
-### 🔹 Labwork 2 – Undo Feature (Command Pattern)
+###  Labwork 2 – Undo Feature (Command Pattern)
 
 This lab implements an **Undo/Redo** mechanic for tile-based movement using the Command Pattern.
 
@@ -46,7 +46,7 @@ This lab implements an **Undo/Redo** mechanic for tile-based movement using the 
 
 ---
 
-### 🔹 Labwork 3 – Tile Placement System
+###  Labwork 3 – Tile Placement System
 
 Developed a **tile-based placement system** using custom Actors and PlayerController logic.
 
@@ -67,7 +67,7 @@ Developed a **tile-based placement system** using custom Actors and PlayerContro
 
 ---
 
-### 🔹 Labwork 4 – Multiplayer Running State & Customization
+###  Labwork 4 – Multiplayer Running State & Customization
 
 Expanded gameplay with **networked movement** and **cosmetic customization**.
 
